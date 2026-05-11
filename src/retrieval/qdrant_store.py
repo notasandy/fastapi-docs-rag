@@ -7,11 +7,9 @@ from dataclasses import dataclass
 from qdrant_client import QdrantClient
 from qdrant_client.models import Distance, PointStruct, VectorParams
 
+from src.core.config import settings
 from src.ingestion.chunker import Chunk
 from src.ingestion.embedder import EMBEDDING_DIM
-
-
-DEFAULT_COLLECTION = "fastapi_docs"
 
 
 @dataclass
@@ -29,15 +27,17 @@ class QdrantStore:
 
     def __init__(
         self,
-        host: str = "localhost",
-        port: int = 6333,
-        collection: str = DEFAULT_COLLECTION,
+        host: str | None = None,
+        port: int | None = None,
+        collection: str | None = None,
     ) -> None:
-        self.client = QdrantClient(host=host, port=port)
-        self.collection = collection
+        self.client = QdrantClient(
+            host=host or settings.qdrant_host,
+            port=port or settings.qdrant_port,
+        )
+        self.collection = collection or settings.qdrant_collection
 
     def recreate_collection(self) -> None:
-        """Drop and recreate the collection. Use when reindexing from scratch."""
         self.client.recreate_collection(
             collection_name=self.collection,
             vectors_config=VectorParams(
@@ -51,7 +51,6 @@ class QdrantStore:
         chunks: list[Chunk],
         vectors: list[list[float]],
     ) -> None:
-        """Insert chunks and their embeddings into the collection."""
         if len(chunks) != len(vectors):
             raise ValueError(
                 f"chunks ({len(chunks)}) and vectors ({len(vectors)}) length mismatch"
@@ -71,11 +70,9 @@ class QdrantStore:
             )
             for chunk, vector in zip(chunks, vectors)
         ]
-
         self.client.upsert(collection_name=self.collection, points=points)
 
     def search(self, query_vector: list[float], top_k: int = 5) -> list[SearchResult]:
-        """Find top-k chunks most similar to the query vector."""
         hits = self.client.query_points(
             collection_name=self.collection,
             query=query_vector,

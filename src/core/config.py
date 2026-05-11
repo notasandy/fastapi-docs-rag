@@ -1,14 +1,32 @@
+"""Application settings loaded from environment / .env."""
+from __future__ import annotations
+
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
-class Settings (BaseSettings):
+
+class Settings(BaseSettings):
     model_config = SettingsConfigDict(
         env_file=".env",
-        env_file_encording="utf-8",
+        env_file_encoding="utf-8",
         extra="ignore",
     )
 
+    # App
     app_name: str = "FastAPI Docs RAG"
-    grok_api_key: str
+    log_level: str = "INFO"
+
+    # Groq
+    groq_api_key: str
     groq_model: str = "llama-3.1-8b-instant"
+
+    # Qdrant
+    qdrant_host: str = "localhost"
+    qdrant_port: int = 6333
+    qdrant_collection: str = "fastapi_docs"
+
+    # Retrieval
+    top_k: int = 5
+    embedding_model: str = "sentence-transformers/all-MiniLM-L6-v2"
+
 
 settings = Settings()
