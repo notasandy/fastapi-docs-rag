@@ -94,7 +94,7 @@ The flow:
 
 ```bash
 # 1. Clone and enter the project
-git clone https://github.com/<your-github-username>/fastapi-docs-rag.git
+git clone https://github.com/notasandy/fastapi-docs-rag.git
 cd fastapi-docs-rag
 
 # 2. Install dependencies
@@ -190,4 +190,4 @@ MIT — see [LICENSE](LICENSE).
 
 ## 👤 Author
 
-Made by [your name] — connect on [GitHub](https://github.com/notasandy).
+Made by Sandy ([notasandy](https://github.com/notasandy)) — AI / LLM engineer, open to remote work. Reach me at notasandy@proton.me.
